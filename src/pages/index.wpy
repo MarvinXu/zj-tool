@@ -1,0 +1,45 @@
+<style lang="scss">
+  $height: 100rpx;
+  .userinfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .userinfo-avatar {
+    width: 80rpx;
+    height: $height;
+    border-radius: 50%;
+  }
+
+  .userinfo-nickname {
+    color: #aaa;
+  }
+</style>
+<template>
+  <view class="container">
+    Hello, {{userInfo.nickName}}
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: 'test'
+    }
+    data = {
+      userInfo: {
+        nickName: '加载中...'
+      }
+    }
+    onLoad () {
+      this.userInfo.nickName = 'Marvin'
+      this.$parent.getUserInfo(d => {
+        console.log(d)
+        this.userInfo = d
+      })
+    }
+  }
+</script>
