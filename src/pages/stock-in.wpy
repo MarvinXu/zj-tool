@@ -1,0 +1,61 @@
+<style lang="scss">
+  .scan-btn{
+    width: 300rpx;
+    height: 300rpx;
+    border: 2px dashed #ededed;
+    line-height: 300rpx;
+    text-align: center;
+    margin: auto;
+  }
+</style>
+<template>
+  <view class="container">
+    <view class="section">
+      <picker @change="PickerChange" value="{{index}}" range="{{array}}">
+          <view class="picker">
+            当前选择：{{array[index]}}
+          </view>
+        </picker>
+    </view>
+    <view class="section">
+      已扫描：{{num}}
+    </view>
+    <view class="section">
+      <view class="scan-btn" @tap="scanCode">点击扫码</view>
+    </view>
+    <view class="section">
+      <text style="text-align: center">{{scanRes}}</text>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class StockIn extends wepy.page {
+    config = {
+      navigationBarTitleText: '入库'
+    }
+    data = {
+      array: ['库位1', '库位2', '库位3', '库位4'],
+      index: 0,
+      num: 0,
+      scanRes: ''
+    }
+    methods = {
+      PickerChange (e) {
+        this.index = e.detail.value
+      },
+      scanCode () {
+        console.log('scan')
+        window.wx.scanCode({
+          success: res => {
+            this.scanRes = res.result
+            this.num ++
+            this.$apply()
+          }
+        })
+      }
+    }
+  }
+</script>

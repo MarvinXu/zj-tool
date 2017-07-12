@@ -1,24 +1,36 @@
 <style lang="scss">
-  $height: 100rpx;
-  .userinfo {
+  .welcome{
     display: flex;
-    flex-direction: column;
     align-items: center;
+    border-bottom: 1px solid #ededed;
+    padding-bottom: 10px;
+    .avatar{
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
   }
-
-  .userinfo-avatar {
-    width: 80rpx;
-    height: $height;
-    border-radius: 50%;
-  }
-
-  .userinfo-nickname {
-    color: #aaa;
+  .row{
+    margin-bottom: 20px;
   }
 </style>
 <template>
   <view class="container">
-    Hello, {{userInfo.nickName}}
+    <view class="section">
+      <view class="welcome">
+        <image class="avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"></image>
+        {{ userInfo.nickName }}
+      </view>
+    </view>
+    <view class="section">
+      <view class="row">
+        <navigator class="btn-default" url="/pages/stock-in" open-type="navigate">入库</navigator>
+      </view>
+      <view class="row">
+        <navigator class="btn-default" url="/pages/stock-out" open-type="navigate">出库</navigator>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -27,7 +39,7 @@
 
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: 'test'
+      navigationBarTitleText: '质检工具'
     }
     data = {
       userInfo: {
@@ -35,10 +47,10 @@
       }
     }
     onLoad () {
-      this.userInfo.nickName = 'Marvin'
+      // this.userInfo.nickName = 'Marvin'
       this.$parent.getUserInfo(d => {
-        console.log(d)
         this.userInfo = d
+        this.$apply()
       })
     }
   }

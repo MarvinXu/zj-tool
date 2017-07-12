@@ -1,4 +1,8 @@
-<style lang="less">
+<style lang="scss">
+page{
+  font-family: "PingFang SC", Helvetica, sans-serif;
+  font-size: 14px;
+}
 .container {
   height: 100%;
   display: flex;
@@ -6,6 +10,21 @@
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
+}
+.section{
+  width: 100%;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+.btn-default{
+  color: #118EE9;
+  border: 1px solid #118EE9;
+  border-radius: 5px;
+  background-color: transparent;
+  box-sizing: border-box;
+  font-size: 16px;
+  text-align: center;
+  line-height: 2.5;
 }
 </style>
 
@@ -16,7 +35,8 @@ import 'wepy-async-function'
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/index'
+      'pages/index',
+      'pages/stock-in'
     ],
     window: {
       backgroundTextStyle: 'light',
