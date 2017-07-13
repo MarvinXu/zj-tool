@@ -35,9 +35,9 @@
     </view> -->
     <view class="section">
       <repeat for="{{scanResults}}" key="data">
-        <swipeDelete :swipeData="item" @delItem.user="deleteScanItem">
+        <swipe-delete :swipeData="item" @delItem.user="deleteScanItem">
           <view class="scan-item">{{item.data}}</view>
-        </swipeDelete>
+        </swipe-delete>
       </repeat>
     </view>
   </view>
@@ -46,14 +46,13 @@
 <script>
   /* global wx */
   import wepy from 'wepy'
-  import swipeDelete from '../components/wepy-swipe-delete'
+  import swipeDelete from 'wepy-swipe-delete'
   export default class StockIn extends wepy.page {
     config = {
       navigationBarTitleText: '入库'
     }
     components = {
-      // 'swipe-delete': swipeDelete
-      swipeDelete
+      'swipe-delete': swipeDelete
     }
     data = {
       storage: ['库位1', '库位2', '库位3', '库位4'],
@@ -65,34 +64,30 @@
         this.storageIndex = e.detail.value
       },
       scanCode () {
-        console.log('scan')
         wx.scanCode({
           success: res => {
             const result = res.result
-            console.log(res)
-            if (~this.scanResults.indexOf(result)) {
+            console.log('scan res:', res)
+            if (~this.findScanItemIndex(result)) {
               console.log('已存在')
             } else {
               this.scanResults.push({
                 data: result,
                 style: 0
               })
+              wx.vibrateLong()
             }
             this.$apply()
           }
         })
       },
       deleteScanItem (item) {
-        console.log(item)
-        console.log(this)
-        const index = this.findScanItemIndex(item)
+        const index = this.findScanItemIndex(item.data)
         this.scanResults.splice(index, 1)
       }
     }
-    findScanItemIndex (item) {
-      return this.scanResults.findIndex(d => {
-        d.data = item.data
-      })
+    findScanItemIndex (result) {
+      return this.scanResults.findIndex(d => d.data === result)
     }
   }
 </script>
