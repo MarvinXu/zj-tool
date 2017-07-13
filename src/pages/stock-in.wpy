@@ -7,55 +7,92 @@
     text-align: center;
     margin: auto;
   }
+  .scan-item {
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
 </style>
 <template>
   <view class="container">
     <view class="section">
-      <picker @change="PickerChange" value="{{index}}" range="{{array}}">
+      <picker @change="PickerChange" value="{{storageIndex}}" range="{{storage}}">
           <view class="picker">
-            当前选择：{{array[index]}}
+            当前选择：{{storage[storageIndex]}}
           </view>
         </picker>
     </view>
     <view class="section">
-      已扫描：{{num}}
+      已扫描：{{scanResults.length}}
     </view>
     <view class="section">
       <view class="scan-btn" @tap="scanCode">点击扫码</view>
     </view>
+<!--     <view class="section">
+      <repeat for="{{scanResults}}" key="item">
+          <view class="list-item">{{item}}</view>
+      </repeat>
+    </view> -->
     <view class="section">
-      <text style="text-align: center">{{scanRes}}</text>
+      <repeat for="{{scanResults}}" key="data">
+        <swipeDelete :swipeData="item" @delItem.user="deleteScanItem">
+          <view class="scan-item">{{item.data}}</view>
+        </swipeDelete>
+      </repeat>
     </view>
   </view>
 </template>
 
 <script>
+  /* global wx */
   import wepy from 'wepy'
-
+  import swipeDelete from '../components/wepy-swipe-delete'
   export default class StockIn extends wepy.page {
     config = {
       navigationBarTitleText: '入库'
     }
+    components = {
+      // 'swipe-delete': swipeDelete
+      swipeDelete
+    }
     data = {
-      array: ['库位1', '库位2', '库位3', '库位4'],
-      index: 0,
-      num: 0,
-      scanRes: ''
+      storage: ['库位1', '库位2', '库位3', '库位4'],
+      storageIndex: 0,
+      scanResults: []
     }
     methods = {
       PickerChange (e) {
-        this.index = e.detail.value
+        this.storageIndex = e.detail.value
       },
       scanCode () {
         console.log('scan')
-        window.wx.scanCode({
+        wx.scanCode({
           success: res => {
-            this.scanRes = res.result
-            this.num ++
+            const result = res.result
+            console.log(res)
+            if (~this.scanResults.indexOf(result)) {
+              console.log('已存在')
+            } else {
+              this.scanResults.push({
+                data: result,
+                style: 0
+              })
+            }
             this.$apply()
           }
         })
+      },
+      deleteScanItem (item) {
+        console.log(item)
+        console.log(this)
+        const index = this.findScanItemIndex(item)
+        this.scanResults.splice(index, 1)
       }
+    }
+    findScanItemIndex (item) {
+      return this.scanResults.findIndex(d => {
+        d.data = item.data
+      })
     }
   }
 </script>
