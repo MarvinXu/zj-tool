@@ -1,44 +1,50 @@
 <style lang="scss">
-  .scan-btn{
+  .btn-wrap{
+    display: flex;
+    justify-content: space-between;
+  }
+  .stock-in-btn{
     width: 300rpx;
-    height: 300rpx;
-    border: 2px dashed #ededed;
-    line-height: 300rpx;
-    text-align: center;
-    margin: auto;
   }
   .scan-item {
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
   }
+  .picker{
+    .desc{
+      float: right;
+      color: #808080;
+    }
+  }
+  .result-wrap{
+    flex: 1;
+    overflow-y: auto;
+  }
 </style>
 <template>
   <view class="container">
+    <toast></toast>
     <view class="section">
-      <picker @change="PickerChange" value="{{storageIndex}}" range="{{storage}}">
-          <view class="picker">
-            当前选择：{{storage[storageIndex]}}
-          </view>
-        </picker>
+      <picker @change="PickerChange" value="{{storageIndex}}" range="{{storage}}" range-key="name">
+        <view class="picker">
+          当前选择：{{curStore.name}}  <text class="desc">库存：{{storage[storageIndex].store.length}}/{{curStore.size}}</text>
+        </view>
+      </picker>
     </view>
     <view class="section">
       已扫描：{{scanResults.length}}
     </view>
-    <view class="section">
-      <view class="scan-btn" @tap="scanCode">点击扫码</view>
-    </view>
-<!--     <view class="section">
-      <repeat for="{{scanResults}}" key="item">
-          <view class="list-item">{{item}}</view>
-      </repeat>
-    </view> -->
-    <view class="section">
-      <repeat for="{{scanResults}}" key="data">
+    <view class="section result-wrap">
+      <repeat for="{{scanResultLines}}" key="data">
         <swipe-delete :swipeData="item" @delItem.user="deleteScanItem">
           <view class="scan-item">{{item.data}}</view>
         </swipe-delete>
       </repeat>
+    </view>
+    <view class="section btn-wrap">
+      <button class="stock-in-btn" type="primary" @tap="submit">一键入库</button>
+      <button class="stock-in-btn" @tap="scanCode">点击扫码</button>
     </view>
   </view>
 </template>
@@ -47,47 +53,96 @@
   /* global wx */
   import wepy from 'wepy'
   import swipeDelete from 'wepy-swipe-delete'
+  import Toast from 'wepy-com-toast'
   export default class StockIn extends wepy.page {
     config = {
       navigationBarTitleText: '入库'
     }
     components = {
-      'swipe-delete': swipeDelete
+      'swipe-delete': swipeDelete,
+      toast: Toast
     }
     data = {
-      storage: ['库位1', '库位2', '库位3', '库位4'],
+      storage: [],
       storageIndex: 0,
-      scanResults: []
+      scanResults: [],
+      scanResultLines: []
+    }
+    computed = {
+      curStore () {
+        return this.storage[this.storageIndex]
+      },
+      curStoreLeft () {
+        return this.curStore && this.curStore.size - this.curStore.store.length
+      }
+    }
+    watch = {
+      scanResults (n, o) {
+        this.scanResultLines = n.map(d => {
+          return {
+            data: d,
+            style: 0
+          }
+        })
+      }
+    }
+    onLoad () {
+      wx.getStorage({
+        key: 'storage',
+        success: res => {
+          this.storage = res.data
+        }
+      })
     }
     methods = {
       PickerChange (e) {
         this.storageIndex = e.detail.value
       },
       scanCode () {
-        wx.scanCode({
-          success: res => {
-            const result = res.result
-            console.log('scan res:', res)
-            if (~this.findScanItemIndex(result)) {
-              console.log('已存在')
-            } else {
-              this.scanResults.push({
-                data: result,
-                style: 0
-              })
-              wx.vibrateLong()
+        if (this.scanResults.length >= this.curStoreLeft) {
+          this.toast('当前库位已经装不下更多了~')
+        } else {
+          wx.scanCode({
+            success: res => {
+              this.toast('success')
+              const result = res.result
+              console.log('scan res:', res)
+              if (~this.findScanItemIndex(result)) {
+                this.toast('已存在')
+              } else {
+                this.scanResults.push(result)
+                wx.vibrateLong()
+              }
+              this.$apply()
             }
-            this.$apply()
-          }
-        })
+          })
+        }
       },
       deleteScanItem (item) {
         const index = this.findScanItemIndex(item.data)
         this.scanResults.splice(index, 1)
+      },
+      submit () {
+        if (this.scanResults.length < 1) {
+          this.toast('您还没有添加商品')
+        } else {
+          this.storage[this.storageIndex].store.push(...this.scanResults)
+          this.scanResults = []
+          wx.setStorage({
+            key: 'storage',
+            data: this.storage
+          })
+          this.toast('入库成功')
+        }
       }
     }
     findScanItemIndex (result) {
-      return this.scanResults.findIndex(d => d.data === result)
+      return this.scanResults.findIndex(d => d === result)
+    }
+    toast (txt) {
+      this.$invoke('toast', 'show', {
+        title: txt
+      })
     }
   }
 </script>

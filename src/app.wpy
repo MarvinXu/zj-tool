@@ -2,13 +2,13 @@
 page{
   font-family: "PingFang SC", Helvetica, sans-serif;
   font-size: 14px;
+  height: 100%;
 }
 .container {
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
   box-sizing: border-box;
 }
 .section{
@@ -29,14 +29,18 @@ page{
 </style>
 
 <script>
+/* global wx */
 import wepy from 'wepy'
 import 'wepy-async-function'
+import {storage} from './data.js'
 
 export default class extends wepy.app {
   config = {
     pages: [
       'pages/index',
-      'pages/stock-in'
+      'pages/stock-in',
+      'pages/upload',
+      'pages/test'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -51,6 +55,10 @@ export default class extends wepy.app {
   }
 
   onLaunch() {
+    wx.setStorage({
+      key: 'storage',
+      data: storage
+    })
   }
 
   getUserInfo(cb) {

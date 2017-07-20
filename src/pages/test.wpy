@@ -1,0 +1,50 @@
+<template>
+  <view class="container">
+    {{obj.list.length}}
+    {{objList.length}}
+    {{objListLength}}
+     /
+    {{pureList.length}}
+    {{pureListLength}}
+     /
+    {{listObj[0].list.length}}
+    {{listObjList.length}}
+    <button @tap="test">test</button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Test extends wepy.page {
+    data = {
+      obj: {
+        list: []
+      },
+      listObj: [{
+        list: []
+      }],
+      pureList: []
+    }
+    computed = {
+      objListLength () {
+        return this.obj.list.length
+      },
+      objList () {
+        return this.obj.list
+      },
+      pureListLength () {
+        return this.pureList.length
+      },
+      listObjList () {
+        return this.listObj[0].list
+      }
+    }
+    methods = {
+      test () {
+        this.obj.list.push(1)
+        this.pureList.push(1)
+        this.listObj[0].list.push(1)
+      }
+    }
+  }
+</script>

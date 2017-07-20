@@ -1,0 +1,40 @@
+<style lang="scss">
+  .choose-btn{
+    width: 300rpx;
+    height: 300rpx;
+    border: 2px dashed #ededed;
+    line-height: 300rpx;
+    text-align: center;
+    margin: auto;
+  }
+</style>
+<template>
+  <view class="container">
+    <view class="section">
+      <view class="choose-btn" @tap="chooseImg">上传图片</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  /* global wx */
+  import wepy from 'wepy'
+  export default class Upload extends wepy.page {
+    config = {
+      navigationBarTitleText: '图片上传'
+    }
+    data = {
+    }
+    computed = {
+    }
+    methods = {
+      chooseImg () {
+        wx.chooseImage({
+          success: res => {
+            console.log(res)
+          }
+        })
+      }
+    }
+  }
+</script>
