@@ -28,7 +28,7 @@
         <navigator class="btn-default" url="/pages/stock-in" open-type="navigate">入库</navigator>
       </view>
       <view class="row">
-        <navigator class="btn-default" url="/pages/test" open-type="navigate">出库</navigator>
+        <navigator class="btn-default" url="/pages/test" open-type="navigate">test</navigator>
       </view>
       <view class="row">
         <navigator class="btn-default" url="/pages/upload" open-type="navigate">图片上传</navigator>
