@@ -28,7 +28,7 @@
     <view class="section">
       <picker @change="PickerChange" value="{{storageIndex}}" range="{{storage}}" range-key="name">
         <view class="picker">
-          当前选择：{{curStore.name}}  <text class="desc">库存：{{storage[storageIndex].store.length}}/{{curStore.size}}</text>
+          当前选择：{{curStore.name}}  <text class="desc">库存：{{curStore.store.length}}/{{curStore.size}}</text>
         </view>
       </picker>
     </view>
