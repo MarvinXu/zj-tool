@@ -63,7 +63,7 @@
       toast: Toast
     }
     data = {
-      storage: [],
+      storage: wx.getStorageSync('storage'),
       storageIndex: 0,
       scanResults: [],
       scanResultLines: []
@@ -78,6 +78,7 @@
     }
     watch = {
       scanResults (n, o) {
+        console.log(n)
         this.scanResultLines = n.map(d => {
           return {
             data: d,
@@ -87,12 +88,6 @@
       }
     }
     onLoad () {
-      wx.getStorage({
-        key: 'storage',
-        success: res => {
-          this.storage = res.data
-        }
-      })
     }
     methods = {
       PickerChange (e) {
@@ -111,7 +106,7 @@
                 this.toast('已存在')
               } else {
                 this.scanResults.push(result)
-                wx.vibrateLong()
+                wx.vibrateLong && wx.vibrateLong()
               }
               this.$apply()
             }
@@ -128,10 +123,7 @@
         } else {
           this.storage[this.storageIndex].store.push(...this.scanResults)
           this.scanResults = []
-          wx.setStorage({
-            key: 'storage',
-            data: this.storage
-          })
+          wx.setStorageSync('storage', this.storage)
           this.toast('入库成功')
         }
       }
